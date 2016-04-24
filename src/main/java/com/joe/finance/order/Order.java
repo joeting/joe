@@ -3,6 +3,8 @@ package com.joe.finance.order;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class Order {
 	
@@ -59,8 +61,9 @@ public class Order {
 	}
 	
 	public void logTrade() {
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("YYYY MMMM dd");
 		String out = String.format(
-				"%s : %s : %s %d shares of %s at %f", portfolio, time, type, shares, symbol,
+				"%-20s: %s %d shares of %s at %f", formatter.print(time), type, shares, symbol,
 				price);
 		System.out.println(out);
 	}
