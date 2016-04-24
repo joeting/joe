@@ -39,7 +39,7 @@ public class ParticleSwarm {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		particles = new ArrayList<>();
-		for (int i = 0; i < NUM_PARTICLES; i++) {
+		for (int i = 0; i < NUM_PARTICLES; i++) { 
 			Particle p = new Particle(dims).init();
 			particles.add(p);
 		}
