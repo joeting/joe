@@ -55,7 +55,7 @@ public class BackTest {
 			System.out.println(
 					String.format("Portfolio end value : $%.2f", report.endValue));
 			String s = 
-					String.format("Cummlative return : %.2f%%", 100 * report.cummulativeReturn);
+					String.format("Cummlative return : +%.2f%%", 100 * report.cummulativeReturn);
 			System.out.println(s);
 		}
 		System.out.println("--------------------------------------------------");
