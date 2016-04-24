@@ -1,9 +1,9 @@
 <config>
-	<startNowMinusNDays>720</startNowMinusNDays>
-    <n>89.0</n>
-    <upperSigma>1.5</upperSigma>
-    <lowerSigma>0.6</lowerSigma>
+    <startNowMinusNDays>720</startNowMinusNDays>
+    <n>47.0</n>
+    <upperSigma>1.2</upperSigma>
+    <lowerSigma>0.9</lowerSigma>
     <maxBuyRatio>0.3</maxBuyRatio>
-    <maxSellRatio>0.22</maxSellRatio>
-    <fitnessValue>0.37856818166700007</fitnessValue>
+    <maxSellRatio>0.2</maxSellRatio>
+    <fitnessValue>3.0976428332020003</fitnessValue>
 </config>
