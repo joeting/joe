@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config>
+    <startNowMinusNDays>720</startNowMinusNDays>
+    <n>67.00902172767724</n>
+    <upperSigma>1.2468264816469925</upperSigma>
+    <lowerSigma>0.9728670984600735</lowerSigma>
+    <maxBuyRatio>0.1827047702100588</maxBuyRatio>
+    <maxSellRatio>0.41103185365257183</maxSellRatio>
+    <fitnessValue>1.0600022587629998</fitnessValue>
+</config>

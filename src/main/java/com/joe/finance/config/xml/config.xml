@@ -1,0 +1,8 @@
+<config>
+    <n>68.33133569128636</n>
+    <upperSigma>1.2407389215298361</upperSigma>
+    <lowerSigma>0.9680915901833953</lowerSigma>
+    <maxBuyRatio>0.17997394131066166</maxBuyRatio>
+    <maxSellRatio>0.4891931214960973</maxSellRatio>
+    <fitnessValue>1.0528419834599998</fitnessValue>
+</config>

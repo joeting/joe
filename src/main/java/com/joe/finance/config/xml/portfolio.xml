@@ -1,0 +1,16 @@
+<portfolio>
+	<name>Test</name>
+	<portfolioStartValue>1000000</portfolioStartValue>
+	<symbols>
+		<symbol>TSLA</symbol>
+		<symbol>NFLX</symbol>
+		<symbol>AMZN</symbol>
+		<symbol>GOOG</symbol>
+		<symbol>FB</symbol>
+		<symbol>LNKD</symbol>
+		<symbol>AAPL</symbol>
+		<symbol>SPY</symbol>
+		<symbol>USO</symbol>
+		<symbol>DUST</symbol>
+	</symbols>
+</portfolio>
