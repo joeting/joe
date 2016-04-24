@@ -1,4 +1,5 @@
 <config>
+	<startNowMinusNDays>720</startNowMinusNDays>
     <n>68.33133569128636</n>
     <upperSigma>1.2407389215298361</upperSigma>
     <lowerSigma>0.9680915901833953</lowerSigma>
