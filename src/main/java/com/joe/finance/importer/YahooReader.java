@@ -61,7 +61,17 @@ public class YahooReader {
 
 	private static void getHistoricalData(String symbol, List<Quote> quotes, Calendar from, 
 			Calendar to) throws IOException {
-		Stock stock = YahooFinance.get(symbol);
+		int numRetriesLeft = 3;
+		Stock stock = null;
+		while (stock == null && numRetriesLeft >=0 ) {
+			try {
+				stock = YahooFinance.get(symbol);
+			} catch (Exception e) {
+				System.out.println("Exception caught importing historical data.  Retry...");
+			} finally {
+				numRetriesLeft--;
+			}
+		}
 		List<HistoricalQuote> histQuotes = stock.getHistory(from, to, Interval.DAILY);
 		for (HistoricalQuote h : histQuotes) {
 			Quote quote = new Quote(symbol, h.getDate(), h.getAdjClose().toString());

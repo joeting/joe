@@ -48,6 +48,9 @@ public class ParticleSwarm {
 	public void execute() {
 		PortfolioConfig portfolioConfig = RunnerConfigUtil.importPortfolioFile().get();
 		for (int i = 0; i < MAX_SWARM_ITERATIONS; i++) {
+			String o = String.format("Particle swarm running iteration %d / %d", i+1, 
+					MAX_SWARM_ITERATIONS);
+			System.out.println(o);
 			List<IStrategy> strategies = new ArrayList<>();
 			// Compute fitness for each particle
 			// Each particle converts to a strategy instance

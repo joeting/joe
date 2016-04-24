@@ -20,7 +20,7 @@ public class QuoteDao {
 	private QuoteCache quoteCache;
 	private Datastore datastore;
 	private Set<String> symbols;
-	private boolean currentLoaded;
+	private boolean currentLoaded = true;
 
 	private QuoteDao(Datastore datastore) {
 		this.datastore = datastore;
