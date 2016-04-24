@@ -130,12 +130,12 @@ public class MeanReversion implements IStrategy {
 		if (asset != null) {
 			currentHolding = asset.numShares;
 		}
+		double currentPortfolioValue = portfolio.computePortfolioValue(time, cache);
 		int sharesToBuy = (int)(portfolio.getCash() / stockPrice);
-		int minSharesToBuy = (int)(portfolio.getInitialValue() * minBuyRatio / stockPrice);
+		int minSharesToBuy = (int)(currentPortfolioValue * minBuyRatio / stockPrice);
 		if (sharesToBuy < minSharesToBuy) {
 			return 0;
 		}
-		double currentPortfolioValue = portfolio.computePortfolioValue(time, cache);
 		int maxSharesToBuy = (int) (currentPortfolioValue * maxBuyRatio / stockPrice);
 		return Math.max(0, maxSharesToBuy - currentHolding);
 	}

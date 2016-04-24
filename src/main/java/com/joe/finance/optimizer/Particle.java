@@ -1,5 +1,7 @@
 package com.joe.finance.optimizer;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +44,7 @@ public class Particle {
 					+ C2 * Math.random() * (globalMaxPosition - currentPosition.get(dim));
 		velocity.put(dim, v);
 		Double p = currentPosition.get(dim) + v;
+		p = round(p, dim.getPrecision());
 		if (p > dim.getValueRange().upperEndpoint()) {
 			p = dim.getValueRange().upperEndpoint();
 		} else if (p < dim.getValueRange().lowerEndpoint()) {
@@ -79,9 +82,15 @@ public class Particle {
 	}
 
 	private double getRandomValue(Dimension dim) {
-		return dim.getValueRange().lowerEndpoint() + 
+		double value =  dim.getValueRange().lowerEndpoint() + 
 				Math.random() *
 					(dim.getValueRange().upperEndpoint() - dim.getValueRange().lowerEndpoint());
+		return round(value, dim.getPrecision());
+	}
+	
+	private double round(double value, int precision) {
+		BigDecimal bd = new BigDecimal(value).setScale(precision, RoundingMode.HALF_EVEN);
+		return bd.doubleValue();
 	}
 	
 }

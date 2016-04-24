@@ -6,10 +6,12 @@ public class Dimension {
 	
 	private String name;
 	private Range<Double> valueRange;
+	private int precision; 
 	
-	public Dimension(String name, Range<Double> valueRange) {
+	public Dimension(String name, Range<Double> valueRange, int precision) {
 		this.name = name;
 		this.valueRange = valueRange;
+		this.precision = precision;
 	}
 	
 	public String getName() {
@@ -22,10 +24,20 @@ public class Dimension {
 	public Range<Double> getValueRange() {
 		return valueRange;
 	}
+	
 	public void setValueRange(Range<Double> valueRange) {
 		this.valueRange = valueRange;
 	}
 	
+	
+	public int getPrecision() {
+		return precision;
+	}
+
+	public void setPrecision(int precision) {
+		this.precision = precision;
+	}
+
 	@Override 
 	public int hashCode() {
 		return name.hashCode();

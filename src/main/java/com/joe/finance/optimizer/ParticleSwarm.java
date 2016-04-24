@@ -21,10 +21,9 @@ import com.joe.finance.util.MarketDateTime;
 
 public class ParticleSwarm {
 	
-	private static final int NUM_PARTICLES = 50;
-	private static final int MAX_SWARM_ITERATIONS = 25;
+	private static final int NUM_PARTICLES = 10;
+	private static final int MAX_SWARM_ITERATIONS = 10;
 	private Set<Dimension> dims;
-	private Map<String, Dimension> nameToDimension;
 	private List<Particle> particles;
 	private MarketDateTime startTime;
 	private MarketDateTime endTime;
@@ -43,10 +42,6 @@ public class ParticleSwarm {
 		for (int i = 0; i < NUM_PARTICLES; i++) {
 			Particle p = new Particle(dims).init();
 			particles.add(p);
-		}
-		this.nameToDimension = new HashMap<>();
-		for (Dimension dim : dims) {
-			nameToDimension.put(dim.getName(), dim);
 		}
 	}
 	
@@ -150,11 +145,11 @@ public class ParticleSwarm {
 	
 	public static void main(String argv[]) throws Exception {
 		
-		Dimension d = new Dimension("n", Range.closed(10.0, 120.0));
-		Dimension dus = new Dimension("us", Range.closed(0.5, 2.0));
-		Dimension dls = new Dimension("ls", Range.closed(0.5, 2.0));
-		Dimension mbr = new Dimension("mbr", Range.closed(0.1, 0.3));
-		Dimension msr = new Dimension("msr", Range.closed(0.2, 1.0));
+		Dimension d = new Dimension("n", Range.closed(30.0, 120.0), 0);
+		Dimension dus = new Dimension("us", Range.closed(0.5, 2.0), 1);
+		Dimension dls = new Dimension("ls", Range.closed(0.5, 2.0), 1);
+		Dimension mbr = new Dimension("mbr", Range.closed(0.1, 0.3), 2);
+		Dimension msr = new Dimension("msr", Range.closed(0.2, 1.0), 2);
 		RunnerConfig config = new RunnerConfig();
 		config.startNowMinusNDays = 720;
 		ParticleSwarm p = new ParticleSwarm(ImmutableSet.of(d, dus, dls, mbr, msr),
