@@ -48,6 +48,7 @@ public class Importer {
 		Portfolio portfolio = new Portfolio(portfolioConfig);
 		importer.importHistoricalData(portfolio.getWatch(),
 				3);
+		System.out.println("---Import Complete---");
 	}
 	
 }
