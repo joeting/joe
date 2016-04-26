@@ -7,11 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Range;
 import com.joe.finance.BackTest;
 import com.joe.finance.Strategy.IStrategy;
 import com.joe.finance.Strategy.MeanReversion;
+import com.joe.finance.config.xml.DimValueConfig;
 import com.joe.finance.config.xml.PortfolioConfig;
 import com.joe.finance.config.xml.RunnerConfig;
 import com.joe.finance.config.xml.RunnerConfigUtil;
@@ -23,7 +22,6 @@ public class ParticleSwarm {
 	
 	private static final int NUM_PARTICLES = 10;
 	private static final int MAX_SWARM_ITERATIONS = 10;
-	private Set<Dimension> dims;
 	private List<Particle> particles;
 	private MarketDateTime startTime;
 	private MarketDateTime endTime;
@@ -32,10 +30,9 @@ public class ParticleSwarm {
 	private Map<Dimension, Double> globalMaxPosition;
 	private double globalMaxFitness = -1;
 	
-	public ParticleSwarm(Set<Dimension> dims, 
+	public ParticleSwarm(Set<Dimension> dims,
 			MarketDateTime startTime, 
 			MarketDateTime endTime) {
-		this.dims = dims;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		particles = new ArrayList<>();
@@ -55,30 +52,12 @@ public class ParticleSwarm {
 			// Compute fitness for each particle
 			// Each particle converts to a strategy instance
 			for (Particle particle : particles) {
-				int n = 0;
-				double us = MeanReversion.UPPER_SIGMA;
-				double ls = MeanReversion.LOWER_SIGMA;
-				double mbr = 1.0;
-				double msr = 1.0;
-				for (Dimension dim : dims) {
-					if (dim.getName().equals("n")) {
-						n = (int) particle.getCurrentPosition().get(dim).doubleValue();
-					} else if ("us".equals(dim.getName())) {
-						us = particle.getCurrentPosition().get(dim);
-					} else if ("ls".equals(dim.getName())) {
-						ls = particle.getCurrentPosition().get(dim);
-					} else if ("mbr".equals(dim.getName())) {
-						mbr = particle.getCurrentPosition().get(dim);
-					} else if ("msr".equals(dim.getName())) {
-						msr = particle.getCurrentPosition().get(dim);
-					}
-				}
 				Portfolio folio = new Portfolio(portfolioConfig);
-				strategies.add(new MeanReversion(n, folio, startTime, endTime)
-						.setUpperSigma(us)
-						.setLowerSigma(ls)
-						.setMaxBuyRatio(mbr)
-						.setMaxSellRatio(msr));
+				IStrategy strategy = new MeanReversion(folio, startTime, endTime);
+				for (Dimension dim : strategy.getDimensions()) {
+					strategy.setDimValue(dim, particle.getCurrentPosition().get(dim));
+				}
+				strategies.add(strategy);
 			}
 			BackTest test = new BackTest(
 					startTime,
@@ -94,7 +73,7 @@ public class ParticleSwarm {
 					globalMaxPosition = particle.cloneCurrentPosition();
 					winningTrades = strategy.getTrades();
 				}
-				for (Dimension dim : dims) {
+				for (Dimension dim : strategy.getDimensions()) {
 					double globalMaxPositionDim = globalMaxPosition.containsKey(dim) 
 							? globalMaxPosition.get(dim) : -1;
 					particle.update(dim, fitnessValue, globalMaxPositionDim);
@@ -115,30 +94,14 @@ public class ParticleSwarm {
 			return;
 		}
 		RunnerConfig config = oConfig.get();
-		for (Dimension d : dims) {
-			switch(d.getName()) {
-				case "n":
-					globalMaxPosition.put(d, config.n);
-				break;
-				case "us":
-					globalMaxPosition.put(d, config.upperSigma);
-				break;
-				case "ls":
-					globalMaxPosition.put(d, config.lowerSigma);
-				break;
-				case "mbr":
-					globalMaxPosition.put(d, config.maxBuyRatio);
-				break;
-				case "msr":
-					globalMaxPosition.put(d, config.maxSellRatio);
-				break;
-			}
+		for (Dimension d : MeanReversion.dims) {
+			globalMaxPosition.put(d, config.getDimValue(d.getName()));
 		}
 		this.globalMaxFitness = config.fitnessValue;
 	}
 	
 	private void printResults() {
-		for (Dimension d : dims) {
+		for (Dimension d : MeanReversion.dims) {
 			String output = String.format("Best %s value : %f", d.getName(), 
 					globalMaxPosition.get(d));
 			System.out.println(output);
@@ -148,24 +111,22 @@ public class ParticleSwarm {
 	
 	public static void main(String argv[]) throws Exception {
 		
-		Dimension d = new Dimension("n", Range.closed(30.0, 120.0), 0);
-		Dimension dus = new Dimension("us", Range.closed(0.5, 2.0), 1);
-		Dimension dls = new Dimension("ls", Range.closed(0.5, 2.0), 1);
-		Dimension mbr = new Dimension("mbr", Range.closed(0.1, 0.3), 2);
-		Dimension msr = new Dimension("msr", Range.closed(0.2, 1.0), 2);
 		RunnerConfig config = new RunnerConfig();
-		config.startNowMinusNDays = 720;
-		ParticleSwarm p = new ParticleSwarm(ImmutableSet.of(d, dus, dls, mbr, msr),
+		config.dimValues = new ArrayList<>();
+		config.startNowMinusNDays =  720;
+		ParticleSwarm p = new ParticleSwarm(MeanReversion.dims,
 				MarketDateTime.nowMinusNDays(config.startNowMinusNDays),
 				MarketDateTime.nowMinusNDays(1));
 	  p.importPreviousRun();
 		p.execute();
 		p.printResults(); 
-		config.n = p.globalMaxPosition.get(d);
-		config.lowerSigma = p.globalMaxPosition.get(dls);
-		config.upperSigma = p.globalMaxPosition.get(dus);
-		config.maxBuyRatio = p.globalMaxPosition.get(mbr);
-		config.maxSellRatio = p.globalMaxPosition.get(msr);
+		
+		for (Dimension dim : MeanReversion.dims) {
+			DimValueConfig dimConfig = new DimValueConfig();
+			dimConfig.name = dim.getName();
+			dimConfig.value = p.globalMaxPosition.get(dim);
+			config.dimValues.add(dimConfig);
+		}
 		config.fitnessValue = p.globalMaxFitness;
 		RunnerConfigUtil.exportConfig(config);
 		

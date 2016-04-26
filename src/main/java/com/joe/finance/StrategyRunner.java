@@ -9,6 +9,7 @@ import com.joe.finance.Strategy.MeanReversion;
 import com.joe.finance.config.xml.PortfolioConfig;
 import com.joe.finance.config.xml.RunnerConfig;
 import com.joe.finance.config.xml.RunnerConfigUtil;
+import com.joe.finance.optimizer.Dimension;
 import com.joe.finance.order.Order;
 import com.joe.finance.portfolio.Portfolio;
 import com.joe.finance.util.MarketDateTime;
@@ -28,12 +29,12 @@ public class StrategyRunner {
 		PortfolioConfig portfolioConfig = RunnerConfigUtil.importPortfolioFile().get();
 		Portfolio folio = new Portfolio(portfolioConfig);
 		MarketDateTime startTime = MarketDateTime.nowMinusNDays(config.startNowMinusNDays);
-		MeanReversion strategy = new MeanReversion(
-				(int) config.n, folio, startTime, MarketDateTime.now());
-		strategy.setUpperSigma(config.upperSigma);
-		strategy.setLowerSigma(config.lowerSigma);
-		strategy.setMaxBuyRatio(config.maxBuyRatio);
-		strategy.setMaxSellRatio(config.maxSellRatio);
+		MeanReversion strategy = new MeanReversion(folio, startTime, MarketDateTime.now());
+		
+		for (Dimension dim : MeanReversion.dims) {
+			strategy.setDimValue(dim, config.getDimValue(dim.getName()));
+		}
+		
 		List<IStrategy> list = new ArrayList<>();
 		list.add(strategy);
 		this.startTime = startTime;

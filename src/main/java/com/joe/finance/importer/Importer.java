@@ -46,8 +46,7 @@ public class Importer {
 		Importer importer = new Importer();
 		PortfolioConfig portfolioConfig = RunnerConfigUtil.importPortfolioFile().get();
 		Portfolio portfolio = new Portfolio(portfolioConfig);
-		importer.importHistoricalData(portfolio.getWatch(),
-				3);
+		importer.refreshHistoricalData(portfolio.getWatch(), 1);
 	}
 	
 }
