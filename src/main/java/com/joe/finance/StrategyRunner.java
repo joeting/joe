@@ -22,7 +22,7 @@ public class StrategyRunner {
 	public StrategyRunner() {
 		Optional<RunnerConfig> oConfig = RunnerConfigUtil.importConfigFile();
 		if (!oConfig.isPresent()) {
-			System.out.println("Nothing to run.. Configure config.xml.");
+			System.out.println("Nothing to run..  Config.xml not imported properly.");
 			return;
 		}
 		RunnerConfig config = oConfig.get();

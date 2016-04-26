@@ -10,6 +10,7 @@ public class Order {
 	
 	public static String OPEN_ORDER = "Open";
 	public static String CLOSED_ORDER = "Closed";
+	public static String SAVED_ORDER = "Saved";
 	
 	public static String SELL = "Sell";
 	public static String BUY = "Buy";

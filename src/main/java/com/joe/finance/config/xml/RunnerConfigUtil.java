@@ -1,5 +1,8 @@
 package com.joe.finance.config.xml;
 
+import static com.joe.finance.config.xml.ProjectSettings.CONFIG_LOCATION_PREFIX;
+import static com.joe.finance.config.xml.ProjectSettings.FUND_NAME;
+
 import java.io.File;
 
 import javax.xml.bind.JAXBContext;
@@ -10,16 +13,19 @@ import com.google.common.base.Optional;
 
 public class RunnerConfigUtil {
 	
-	private static final String FILE_PREFIX = "/Users/IPL/git/joe";
+	private static final String SRC_LOCATION_PREFIX = "/src/main/java/com/joe/finance/config/xml/";
 
-	public static final String CONFIG_FILE = FILE_PREFIX +
-			"/src/main/java/com/joe/finance/config/xml/config.xml";
+	public static final String CONFIG_FILE = CONFIG_LOCATION_PREFIX +
+			SRC_LOCATION_PREFIX
+			+ FUND_NAME + "/config.xml";
 	
-	public static final String PORTFOLIO_CONFIG_FILE = FILE_PREFIX +
-			"/src/main/java/com/joe/finance/config/xml/portfolio.xml";
+	public static final String PORTFOLIO_CONFIG_FILE = CONFIG_LOCATION_PREFIX +
+			SRC_LOCATION_PREFIX
+			+ FUND_NAME + "/portfolio.xml";
 	
-	public static final String OUTPUT_FILE = FILE_PREFIX  
-			+ "/src/main/java/com/joe/finance/config/xml/pso_output.xml";
+	public static final String OUTPUT_FILE = CONFIG_LOCATION_PREFIX  
+			+ SRC_LOCATION_PREFIX 
+			+ FUND_NAME + "/pso_output.xml";
 	
 	
 	public static Optional<RunnerConfig> importConfigFile() {
@@ -53,7 +59,7 @@ public class RunnerConfigUtil {
 	     config = (T) jaxbUnmarshaller.unmarshal( 
 	    		new File(fileName));
     } catch (Exception e) {
-    	System.out.println("Cannot read conf for " + T);
+    	System.out.println("Cannot read conf for..  Check FILE_PREFIX " + T);
     }
     Optional<T> oConfig = Optional.fromNullable(config);
     return oConfig;
