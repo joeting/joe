@@ -10,7 +10,7 @@ import com.google.common.base.Optional;
 
 public class RunnerConfigUtil {
 	
-	private static final String FILE_PREFIX = "/Users/joe/Documents/workspace/finance";
+	private static final String FILE_PREFIX = "/Users/IPL/git/joe";
 
 	public static final String CONFIG_FILE = FILE_PREFIX +
 			"/src/main/java/com/joe/finance/config/xml/config.xml";
