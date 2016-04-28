@@ -8,7 +8,7 @@ import com.joe.finance.Strategy.IStrategy;
 import com.joe.finance.Strategy.MeanReversion;
 import com.joe.finance.config.xml.PortfolioConfig;
 import com.joe.finance.config.xml.RunnerConfig;
-import com.joe.finance.config.xml.RunnerConfigUtil;
+import com.joe.finance.config.xml.XmlConfigUtil;
 import com.joe.finance.optimizer.Dimension;
 import com.joe.finance.order.Order;
 import com.joe.finance.portfolio.Portfolio;
@@ -20,13 +20,13 @@ public class StrategyRunner {
 	private List<IStrategy> strategies;
 	
 	public StrategyRunner() {
-		Optional<RunnerConfig> oConfig = RunnerConfigUtil.importConfigFile();
+		Optional<RunnerConfig> oConfig = XmlConfigUtil.importConfigFile();
 		if (!oConfig.isPresent()) {
 			System.out.println("Nothing to run..  Config.xml not imported properly.");
 			return;
 		}
 		RunnerConfig config = oConfig.get();
-		PortfolioConfig portfolioConfig = RunnerConfigUtil.importPortfolioFile().get();
+		PortfolioConfig portfolioConfig = XmlConfigUtil.importPortfolioFile().get();
 		Portfolio folio = new Portfolio(portfolioConfig);
 		MarketDateTime startTime = MarketDateTime.nowMinusNDays(config.startNowMinusNDays);
 		MeanReversion strategy = new MeanReversion(folio, startTime, MarketDateTime.now());

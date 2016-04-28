@@ -13,14 +13,14 @@ import com.joe.finance.Strategy.MeanReversion;
 import com.joe.finance.config.xml.DimValueConfig;
 import com.joe.finance.config.xml.PortfolioConfig;
 import com.joe.finance.config.xml.RunnerConfig;
-import com.joe.finance.config.xml.RunnerConfigUtil;
+import com.joe.finance.config.xml.XmlConfigUtil;
 import com.joe.finance.order.Order;
 import com.joe.finance.portfolio.Portfolio;
 import com.joe.finance.util.MarketDateTime;
 
 public class ParticleSwarm {
 	
-	private static final int NUM_PARTICLES = 10;
+	private static final int NUM_PARTICLES = 50;
 	private static final int MAX_SWARM_ITERATIONS = 10;
 	private List<Particle> particles;
 	private MarketDateTime startTime;
@@ -43,7 +43,7 @@ public class ParticleSwarm {
 	}
 	
 	public void execute() {
-		PortfolioConfig portfolioConfig = RunnerConfigUtil.importPortfolioFile().get();
+		PortfolioConfig portfolioConfig = XmlConfigUtil.importPortfolioFile().get();
 		for (int i = 0; i < MAX_SWARM_ITERATIONS; i++) {
 			String o = String.format("Particle swarm running iteration %d / %d", i+1, 
 					MAX_SWARM_ITERATIONS);
@@ -88,7 +88,7 @@ public class ParticleSwarm {
 	}
 	
 	private void importPreviousRun() throws Exception {
-		Optional<RunnerConfig> oConfig = RunnerConfigUtil.importOutputFile();
+		Optional<RunnerConfig> oConfig = XmlConfigUtil.importOutputFile();
 		globalMaxPosition = new HashMap<>();
 		if (!oConfig.isPresent()) { 
 			return;
@@ -128,7 +128,7 @@ public class ParticleSwarm {
 			config.dimValues.add(dimConfig);
 		}
 		config.fitnessValue = p.globalMaxFitness;
-		RunnerConfigUtil.exportConfig(config);
+		XmlConfigUtil.export(config);
 		
 	}
 	

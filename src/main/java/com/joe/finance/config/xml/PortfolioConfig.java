@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PortfolioConfig {	
 	
 	public String name;
+	public String lastImportDate;
 	@XmlElementWrapper(name="symbols")
 	@XmlElement(name="symbol")
 	public List<String> symbols;

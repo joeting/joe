@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config>
+    <startNowMinusNDays>720</startNowMinusNDays>
+    <dimValues>
+        <dimValue>
+            <name>lowerSigma</name>
+            <value>2.0</value>
+        </dimValue>
+        <dimValue>
+            <name>maxBuyRatio</name>
+            <value>0.3</value>
+        </dimValue>
+        <dimValue>
+            <name>upperSigma</name>
+            <value>1.0</value>
+        </dimValue>
+        <dimValue>
+            <name>ndays</name>
+            <value>40.0</value>
+        </dimValue>
+        <dimValue>
+            <name>maxSellRatio</name>
+            <value>0.2</value>
+        </dimValue>
+        <dimValue>
+            <name>minBuyRatio</name>
+            <value>0.1</value>
+        </dimValue>
+    </dimValues>
+    <fitnessValue>1.6358288931920002</fitnessValue>
+</config>

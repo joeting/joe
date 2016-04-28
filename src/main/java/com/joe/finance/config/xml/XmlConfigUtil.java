@@ -11,7 +11,7 @@ import javax.xml.bind.Unmarshaller;
 
 import com.google.common.base.Optional;
 
-public class RunnerConfigUtil {
+public class XmlConfigUtil {
 	
 	private static final String SRC_LOCATION_PREFIX = "/src/main/java/com/joe/finance/config/xml/";
 
@@ -30,7 +30,7 @@ public class RunnerConfigUtil {
 	
 	public static Optional<RunnerConfig> importConfigFile() {
 		try {
-			return RunnerConfigUtil.importConfig(CONFIG_FILE, RunnerConfig.class);
+			return XmlConfigUtil.importConfig(CONFIG_FILE, RunnerConfig.class);
 		} catch (Exception e) {
 			return Optional.absent();
 		}
@@ -38,7 +38,7 @@ public class RunnerConfigUtil {
 	
 	public static Optional<PortfolioConfig> importPortfolioFile()  {
 		try {
-			return RunnerConfigUtil.<PortfolioConfig>importConfig(PORTFOLIO_CONFIG_FILE, 
+			return XmlConfigUtil.<PortfolioConfig>importConfig(PORTFOLIO_CONFIG_FILE, 
 					PortfolioConfig.class);
 		} catch (Exception e) {
 			return Optional.absent();
@@ -46,11 +46,19 @@ public class RunnerConfigUtil {
 	}
 	
 	public static Optional<RunnerConfig> importOutputFile() throws Exception {
-		return RunnerConfigUtil.<RunnerConfig>importConfig(OUTPUT_FILE, RunnerConfig.class);
+		return XmlConfigUtil.<RunnerConfig>importConfig(OUTPUT_FILE, RunnerConfig.class);
 	}
 
+	public static void export(RunnerConfig config) throws Exception {
+		exportConfig(OUTPUT_FILE, config);
+	}
+	
+	public static void export(PortfolioConfig config) throws Exception {
+		exportConfig(PORTFOLIO_CONFIG_FILE, config);
+	}
+	
 	@SuppressWarnings("unchecked")
-	public static <T> Optional<T> importConfig(String fileName, 
+	private static <T> Optional<T> importConfig(String fileName, 
 			@SuppressWarnings("rawtypes") Class T) throws Exception {
 		JAXBContext jaxbContext = JAXBContext.newInstance(T);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -59,18 +67,19 @@ public class RunnerConfigUtil {
 	     config = (T) jaxbUnmarshaller.unmarshal( 
 	    		new File(fileName));
     } catch (Exception e) {
-    	System.out.println("Cannot read conf for..  Check FILE_PREFIX " + T);
+    	System.out.println(
+    			String.format("Cannot read conf file %s.  Check FILE_PREFIX ",  T));
     }
     Optional<T> oConfig = Optional.fromNullable(config);
     return oConfig;
 	}
 	
-	public static void exportConfig(RunnerConfig config) throws Exception {
-		JAXBContext jaxbContext = JAXBContext.newInstance(RunnerConfig.class);
-    Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    jaxbMarshaller.marshal(config, new File(
-    		OUTPUT_FILE));
+	private static <T> void exportConfig(String fileName, T classInstance) 
+			throws Exception {
+		JAXBContext jaxbContext = JAXBContext.newInstance(classInstance.getClass());
+		 Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+	    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	    jaxbMarshaller.marshal(classInstance, new File(fileName));
 	}
 
 }

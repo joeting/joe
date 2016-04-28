@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import com.joe.finance.config.xml.PortfolioConfig;
-import com.joe.finance.config.xml.RunnerConfigUtil;
+import com.joe.finance.config.xml.XmlConfigUtil;
 import com.joe.finance.data.Quote;
 import com.joe.finance.data.QuoteDao;
 import com.joe.finance.portfolio.Portfolio;
@@ -44,10 +49,21 @@ public class Importer {
 	
 	public static void main(String[] args) throws Exception {
 		Importer importer = new Importer();
-		PortfolioConfig portfolioConfig = RunnerConfigUtil.importPortfolioFile().get();
+		PortfolioConfig portfolioConfig = XmlConfigUtil.importPortfolioFile().get();
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 		Portfolio portfolio = new Portfolio(portfolioConfig);
-		importer.importHistoricalData(portfolio.getWatch(),
-				3);
+		DateTime now = DateTime.now();
+		if (portfolioConfig.lastImportDate == null) {
+			importer.importHistoricalData(portfolio.getWatch(),
+					3);
+		} else {
+			DateTime time = formatter.parseDateTime(portfolioConfig.lastImportDate);
+			Days days = Days.daysBetween(time, now);
+			int monthsElapsed = days.getDays() / 30 + 1;
+			importer.refreshHistoricalData(portfolio.getWatch(), monthsElapsed);
+		}
+		portfolioConfig.lastImportDate = formatter.print(now);
+		XmlConfigUtil.export(portfolioConfig);
 		System.out.println("---Import Complete---");
 	}
 	
