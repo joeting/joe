@@ -170,7 +170,12 @@ public class MeanReversion implements IStrategy {
 		}
 		int maxSharesToBuy = (int) (currentPortfolioValue 
 				* dimValueMap.get(maxBuyRatio) / stockPrice);
-		return Math.max(0, maxSharesToBuy - currentHolding);
+		maxSharesToBuy =  maxSharesToBuy - currentHolding;
+		if (maxSharesToBuy < minSharesToBuy) {
+			return 0;
+		} else {
+			return maxSharesToBuy;
+		}
 	}
 	
 	private int computeSharesToSell(Asset asset, DateTime time, double stockPrice) {

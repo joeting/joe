@@ -1,4 +1,5 @@
 <config>
+	<name>MeanReversion</name>
     <startNowMinusNDays>721</startNowMinusNDays>
     <dimValues>
     	<dimValue>

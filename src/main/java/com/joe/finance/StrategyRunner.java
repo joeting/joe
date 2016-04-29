@@ -3,11 +3,10 @@ package com.joe.finance;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Optional;
 import com.joe.finance.Strategy.IStrategy;
-import com.joe.finance.Strategy.MeanReversion;
 import com.joe.finance.config.xml.PortfolioConfig;
-import com.joe.finance.config.xml.RunnerConfig;
+import com.joe.finance.config.xml.StrategyConfig;
+import com.joe.finance.config.xml.StrategyFactory;
 import com.joe.finance.config.xml.XmlConfigUtil;
 import com.joe.finance.optimizer.Dimension;
 import com.joe.finance.order.Order;
@@ -20,18 +19,13 @@ public class StrategyRunner {
 	private List<IStrategy> strategies;
 	
 	public StrategyRunner() {
-		Optional<RunnerConfig> oConfig = XmlConfigUtil.importConfigFile();
-		if (!oConfig.isPresent()) {
-			System.out.println("Nothing to run..  Config.xml not imported properly.");
-			return;
-		}
-		RunnerConfig config = oConfig.get();
+		StrategyConfig config = XmlConfigUtil.importConfigFile();
 		PortfolioConfig portfolioConfig = XmlConfigUtil.importPortfolioFile().get();
-		Portfolio folio = new Portfolio(portfolioConfig);
+		Portfolio portfolio = new Portfolio(portfolioConfig);
 		MarketDateTime startTime = MarketDateTime.nowMinusNDays(config.startNowMinusNDays);
-		MeanReversion strategy = new MeanReversion(folio, startTime, MarketDateTime.now());
+		IStrategy strategy = StrategyFactory.buildStrategy(config, portfolio, MarketDateTime.now());
 		
-		for (Dimension dim : MeanReversion.dims) {
+		for (Dimension dim : StrategyFactory.getStrategyDimension(config)) {
 			strategy.setDimValue(dim, config.getDimValue(dim.getName()));
 		}
 		

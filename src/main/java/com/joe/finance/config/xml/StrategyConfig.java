@@ -7,8 +7,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="config")
-public class RunnerConfig {
+public class StrategyConfig {
 	
+	public String name;
 	public int startNowMinusNDays;
 	@XmlElementWrapper(name="dimValues")
 	@XmlElement(name="dimValue")

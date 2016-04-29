@@ -17,7 +17,7 @@ public class XmlConfigUtil {
 
 	public static final String CONFIG_FILE = CONFIG_LOCATION_PREFIX +
 			SRC_LOCATION_PREFIX
-			+ FUND_NAME + "/config.xml";
+			+ FUND_NAME + "/strategy_config.xml";
 	
 	public static final String PORTFOLIO_CONFIG_FILE = CONFIG_LOCATION_PREFIX +
 			SRC_LOCATION_PREFIX
@@ -28,11 +28,13 @@ public class XmlConfigUtil {
 			+ FUND_NAME + "/pso_output.xml";
 	
 	
-	public static Optional<RunnerConfig> importConfigFile() {
+	public static StrategyConfig importConfigFile() {
 		try {
-			return XmlConfigUtil.importConfig(CONFIG_FILE, RunnerConfig.class);
+			Optional<StrategyConfig> oConfig = 
+					XmlConfigUtil.importConfig(CONFIG_FILE, StrategyConfig.class);
+			return oConfig.get();
 		} catch (Exception e) {
-			return Optional.absent();
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -45,11 +47,18 @@ public class XmlConfigUtil {
 		}
 	}
 	
-	public static Optional<RunnerConfig> importOutputFile() throws Exception {
-		return XmlConfigUtil.<RunnerConfig>importConfig(OUTPUT_FILE, RunnerConfig.class);
+	public static Optional<StrategyConfig> importOutputFile()  {
+		try {
+			Optional<StrategyConfig> config = 
+					XmlConfigUtil.<StrategyConfig>importConfig(OUTPUT_FILE, StrategyConfig.class);
+			return config;
+		} catch (Exception e) {
+			System.out.println("Error reading previous PSO output.");
+		}
+		return Optional.absent();
 	}
 
-	public static void export(RunnerConfig config) throws Exception {
+	public static void export(StrategyConfig config) throws Exception {
 		exportConfig(OUTPUT_FILE, config);
 	}
 	
@@ -68,7 +77,7 @@ public class XmlConfigUtil {
 	    		new File(fileName));
     } catch (Exception e) {
     	System.out.println(
-    			String.format("Cannot read conf file %s.  Check FILE_PREFIX ",  T));
+    			String.format("Cannot read config file %s for class %s. ",  fileName, T));
     }
     Optional<T> oConfig = Optional.fromNullable(config);
     return oConfig;
