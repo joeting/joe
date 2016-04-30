@@ -6,6 +6,10 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.joe.finance.data.QuoteCache;
+import com.joe.finance.data.QuoteDao;
+import com.joe.finance.portfolio.Portfolio;
+
 public class Order {
 	
 	public static String OPEN_ORDER = "Open";
@@ -16,7 +20,7 @@ public class Order {
 	public static String BUY = "Buy";
 	
 	public DateTime time;
-	public String portfolio;
+	public Portfolio portfolio;
 	public String type;
 	public String symbol;
 	public int shares;
@@ -24,7 +28,7 @@ public class Order {
 	public Double transactionAmount;
 	public String status;
 	
-	public static Order buyOrder(String portfolio, DateTime time, String symbol, int numShares, double sellPrice, 
+	public static Order buyOrder(Portfolio portfolio, DateTime time, String symbol, int numShares, double sellPrice, 
 			double amount) {
 		Order order = new Order();
 		order.portfolio = portfolio;
@@ -38,7 +42,7 @@ public class Order {
 		return order;
 	}
 	
-	public static Order sellOrder(String portfolio, DateTime time, String symbol, int numShares, 
+	public static Order sellOrder(Portfolio portfolio, DateTime time, String symbol, int numShares, 
 			double sellPrice, double amount) {
 		Order order = new Order();
 		order.portfolio = portfolio;
@@ -56,16 +60,17 @@ public class Order {
 		if (orders == null) {
 			return;
 		}
+		QuoteCache cache = QuoteDao.quoteDao().getCache();
 		for (Order order : orders) {
-			order.logTrade();
+			order.logTrade(cache);
 		}
 	}
 	
-	public void logTrade() {
+	public void logTrade(QuoteCache cache) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("YYYY MMMM dd");
 		String out = String.format(
-				"%-20s: %s %d shares of %s at %f", formatter.print(time), type, shares, symbol,
-				price);
+				"%-20s| %s %d shares of %s at %f \t | portfolio value : $%.2f", formatter.print(time), type, shares, symbol,
+				price, portfolio.computePortfolioValue(time, cache));
 		System.out.println(out);
 	}
 

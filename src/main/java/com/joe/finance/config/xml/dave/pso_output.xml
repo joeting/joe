@@ -13,20 +13,20 @@
         </dimValue>
         <dimValue>
             <name>upperSigma</name>
-            <value>1.2</value>
+            <value>1.3</value>
         </dimValue>
         <dimValue>
             <name>ndays</name>
-            <value>46.0</value>
+            <value>45.0</value>
         </dimValue>
         <dimValue>
             <name>maxSellRatio</name>
-            <value>0.61</value>
+            <value>0.56</value>
         </dimValue>
         <dimValue>
             <name>minBuyRatio</name>
             <value>0.1</value>
         </dimValue>
     </dimValues>
-    <fitnessValue>4.030788671040999</fitnessValue>
+    <fitnessValue>4.333785019377</fitnessValue>
 </config>

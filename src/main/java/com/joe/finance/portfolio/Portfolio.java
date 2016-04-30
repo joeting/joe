@@ -6,9 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.base.Optional;
 import com.joe.finance.Strategy.Report;
@@ -29,6 +32,8 @@ public class Portfolio {
 	// Set of stocks to track for algorithm;
 	private Set<String> watch;
 	private List<Order> orders;
+	private DateTimeFormatter valueKeyFormatter;
+	private Map<String, Double> valueMap;
 
 	public class Asset {
 		public Asset(String symbol, int numShares) {
@@ -43,6 +48,8 @@ public class Portfolio {
 	public Portfolio(PortfolioConfig config) {
 		this(config.name, config.portfolioStartValue);
 		this.watch = new HashSet<String>(config.symbols);
+		this.valueMap = new TreeMap<>();
+		valueKeyFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 	}
 	
 	public Portfolio(String name, double cash) {
@@ -78,7 +85,7 @@ public class Portfolio {
 		}
 		double amount = numShares * sellPrice;
 		cash += amount;
-		Order order = Order.sellOrder(name, time, symbol, numShares, sellPrice, amount);
+		Order order = Order.sellOrder(this, time, symbol, numShares, sellPrice, amount);
 		orders.add(order);
 	}
 	
@@ -116,7 +123,7 @@ public class Portfolio {
 		}
 		double amount = numShares * buyPrice;
 		cash -= amount;
-		Order order = Order.buyOrder(name, time, symbol, numShares, buyPrice, amount);
+		Order order = Order.buyOrder(this, time, symbol, numShares, buyPrice, amount);
 		orders.add(order);
 	}
 
@@ -134,6 +141,11 @@ public class Portfolio {
 	}
 
 	public Double computePortfolioValue(DateTime nowDateTime, QuoteCache cache) {
+		String key = valueKeyFormatter.print(nowDateTime);
+		Double value = valueMap.get(key);
+		if (value != null) {
+			return value;
+		}
 		Double portfolioValue = this.cash;
 		Set<String> holdings = position.keySet();
 		for (String symbol : holdings) {
@@ -145,6 +157,7 @@ public class Portfolio {
 				throw new RuntimeException("Quote unavailable for " + nowDateTime);
 			}
 		}
+		valueMap.put(key, portfolioValue);
 		return portfolioValue;
 	}
 	

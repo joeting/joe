@@ -2,30 +2,29 @@
 	<name>MeanReversion</name>
     <startNowMinusNDays>721</startNowMinusNDays>
     <dimValues>
-    	<dimValue>
-    		<name>ndays</name>
-    		<value>47.0</value>
-    	</dimValue>
-    	<dimValue>
-    		<name>upperSigma</name>
-    		<value>1.2</value>
-    	</dimValue>
-    	<dimValue>
-    		<name>lowerSigma</name>
-    		<value>0.9</value>
-    	</dimValue>
-    	<dimValue>
-    		<name>minBuyRatio</name>
-    		<value>0.1</value>
-    	</dimValue>
-    	<dimValue>
-    		<name>maxBuyRatio</name>
-    		<value>0.3</value>
-    	</dimValue>
-    	<dimValue>
-    		<name>maxSellRatio</name>
-    		<value>0.2</value>
-    	</dimValue>
+        <dimValue>
+            <name>lowerSigma</name>
+            <value>0.9</value>
+        </dimValue>
+        <dimValue>
+            <name>maxBuyRatio</name>
+            <value>0.3</value>
+        </dimValue>
+        <dimValue>
+            <name>upperSigma</name>
+            <value>1.2</value>
+        </dimValue>
+        <dimValue>
+            <name>ndays</name>
+            <value>46.0</value>
+        </dimValue>
+        <dimValue>
+            <name>maxSellRatio</name>
+            <value>0.61</value>
+        </dimValue>
+        <dimValue>
+            <name>minBuyRatio</name>
+            <value>0.1</value>
+        </dimValue>
     </dimValues>
-    <fitnessValue>3.09</fitnessValue>
 </config>
