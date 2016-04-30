@@ -50,13 +50,7 @@ public class BackTest {
 		System.out.println("--------------------------------------------------");
 		for (IStrategy strategy : strategies) {
 			Report report = strategy.getReport(endTime);
-			System.out.println(
-					String.format("Portfolio start value : $%.2f", report.startValue));
-			System.out.println(
-					String.format("Portfolio end value : $%.2f", report.endValue));
-			String s = 
-					String.format("Cummlative return : +%.2f%%", 100 * report.cummulativeReturn);
-			System.out.println(s);
+			report.printReport();
 		}
 		System.out.println("--------------------------------------------------");
 	}

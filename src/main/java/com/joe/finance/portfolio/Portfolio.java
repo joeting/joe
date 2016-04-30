@@ -77,10 +77,11 @@ public class Portfolio {
 
 	public void sellShares(DateTime time, String symbol, int numShares, double sellPrice) {
 		Asset asset = position.get(symbol);
-		assert (asset != null);
+		if (numShares > asset.numShares) {
+			throw new RuntimeException("Selling more shares than available.  Check logic.");
+		}
 		asset.numShares -= numShares;
-		assert (asset.numShares >= 0);
-		if (numShares == 0) {
+		if (asset.numShares == 0) {
 			position.remove(symbol);
 		}
 		double amount = numShares * sellPrice;
@@ -122,6 +123,9 @@ public class Portfolio {
 			asset.numShares += numShares;
 		}
 		double amount = numShares * buyPrice;
+		if (amount > cash) {
+			throw new RuntimeException("Insufficent cash to buy shares.  Check logic.");
+		}
 		cash -= amount;
 		Order order = Order.buyOrder(this, time, symbol, numShares, buyPrice, amount);
 		orders.add(order);

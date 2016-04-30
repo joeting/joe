@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <config>
     <name>MeanReversion</name>
-    <startNowMinusNDays>721</startNowMinusNDays>
+    <startNowMinusNDays>720</startNowMinusNDays>
     <dimValues>
         <dimValue>
             <name>lowerSigma</name>
@@ -28,5 +28,5 @@
             <value>0.1</value>
         </dimValue>
     </dimValues>
-    <fitnessValue>4.333785019377</fitnessValue>
+    <fitnessValue>3.73</fitnessValue>
 </config>

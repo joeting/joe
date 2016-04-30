@@ -21,7 +21,7 @@ public class BuyHold implements IStrategy {
 		this.cache = cache;
 		report = new Report();
 		report.strategyName = "BuyHold";
-		report.portfolioName = portfolio.getName();
+		report.portfolio = portfolio;
 	}
 	
 	@Override

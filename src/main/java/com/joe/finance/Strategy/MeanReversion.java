@@ -83,7 +83,7 @@ public class MeanReversion implements IStrategy {
 		
 		report = new Report();
 		report.strategyName = "MeanReversion";
-		report.portfolioName = portfolio.getName();
+		report.portfolio = portfolio;
 		
 		dimValueMap = new HashMap<>();
 		dimValueMap.put(ndays, (double) 100);
@@ -171,6 +171,7 @@ public class MeanReversion implements IStrategy {
 		int maxSharesToBuy = (int) (currentPortfolioValue 
 				* dimValueMap.get(maxBuyRatio) / stockPrice);
 		maxSharesToBuy =  maxSharesToBuy - currentHolding;
+		maxSharesToBuy = Math.min(sharesToBuy, maxSharesToBuy);
 		if (maxSharesToBuy < minSharesToBuy) {
 			return 0;
 		} else {

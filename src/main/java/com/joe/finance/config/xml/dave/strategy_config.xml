@@ -1,6 +1,6 @@
 <config>
 	<name>MeanReversion</name>
-    <startNowMinusNDays>721</startNowMinusNDays>
+    <startNowMinusNDays>720</startNowMinusNDays>
     <dimValues>
         <dimValue>
             <name>lowerSigma</name>
