@@ -48,7 +48,7 @@ public class StrategyRunner {
 		test.run();
 		test.generateReport();
 		for (IStrategy strategy : strategies) {
-			strategy.run(MarketDateTime.now(), true);
+			strategy.run(MarketDateTime.now(), false);
 			Order.logTrades(strategy.getTrades());
 		}
 	}
