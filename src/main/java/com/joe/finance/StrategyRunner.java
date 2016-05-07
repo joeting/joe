@@ -1,8 +1,5 @@
 package com.joe.finance;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.joe.finance.Strategy.IStrategy;
 import com.joe.finance.config.xml.PortfolioConfig;
 import com.joe.finance.config.xml.StrategyConfig;
@@ -16,7 +13,7 @@ import com.joe.finance.util.MarketDateTime;
 public class StrategyRunner {
 	
 	private MarketDateTime startTime;
-	private List<IStrategy> strategies;
+	private IStrategy strategy;
 	
 	public StrategyRunner() {
 		StrategyConfig config = XmlConfigUtil.importConfigFile();
@@ -24,33 +21,27 @@ public class StrategyRunner {
 		Portfolio portfolio = new Portfolio(portfolioConfig);
 		MarketDateTime startTime = MarketDateTime.nowMinusNDays(config.startNowMinusNDays);
 		IStrategy strategy = StrategyFactory.buildStrategy(config, portfolio, MarketDateTime.now());
-		
+		// strategy.setDebug();
 		for (Dimension dim : StrategyFactory.getStrategyDimension(config)) {
 			strategy.setDimValue(dim, config.getDimValue(dim.getName()));
 		}
-		
-		List<IStrategy> list = new ArrayList<>();
-		list.add(strategy);
 		this.startTime = startTime;
-		this.strategies = list;
+		this.strategy = strategy;
 	}
 	
-	public StrategyRunner(MarketDateTime startTime, List<IStrategy> strategies) {
+	public StrategyRunner(MarketDateTime startTime, IStrategy strategy) {
 		this.startTime = startTime;
-		this.strategies = strategies;
+		this.strategy = strategy;
 	}
 	
 	public void run() {
 		BackTest test = new BackTest(
 				startTime,
-				MarketDateTime.nowMinusNDays(1),
-				strategies);
+				MarketDateTime.now(),
+				strategy);
 		test.run();
 		test.generateReport();
-		for (IStrategy strategy : strategies) {
-			strategy.run(MarketDateTime.now(), false);
-			Order.logTrades(strategy.getTrades());
-		}
+		Order.logTrades(strategy.getTrades());
 	}
 	
 	public static void main(String argv[]) throws Exception {

@@ -10,10 +10,10 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.google.common.base.Optional;
 import com.joe.finance.Strategy.Report;
 import com.joe.finance.config.xml.PortfolioConfig;
 import com.joe.finance.data.QuoteCache;
@@ -21,7 +21,7 @@ import com.joe.finance.order.Order;
 
 public class Portfolio {
 
-	public static final double MAX_SECURITY_HOLDING = 0.2;
+	public static final double MIN_STOCK_HOLDING_PERIOD = 30;
 	static final Logger logger = Logger.getLogger(Portfolio.class);
 	
 	private String name;
@@ -34,15 +34,19 @@ public class Portfolio {
 	private List<Order> orders;
 	private DateTimeFormatter valueKeyFormatter;
 	private Map<String, Double> valueMap;
+	// Key is stock symbol
+	private Map<String, DateTime> lastSaleLookup;
 
 	public class Asset {
-		public Asset(String symbol, int numShares) {
+		public Asset(String symbol, int numShares, double buyPrice) {
 			this.symbol = symbol;
 			this.numShares = numShares;
+			this.buyPrice = buyPrice;
 		}
 
 		public String symbol;
 		public int numShares;
+		public double buyPrice;
 	}
 
 	public Portfolio(PortfolioConfig config) {
@@ -50,6 +54,7 @@ public class Portfolio {
 		this.watch = new HashSet<String>(config.symbols);
 		this.valueMap = new TreeMap<>();
 		valueKeyFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+		lastSaleLookup = new HashMap<>();
 	}
 	
 	public Portfolio(String name, double cash) {
@@ -61,21 +66,22 @@ public class Portfolio {
 		this.orders = new ArrayList<>();
 	}
 
-	public void sellAllShares(DateTime nowDateTime, QuoteCache cache) {
-		if (position.isEmpty()) {
-			return;
+	public boolean canBuyBackShares(String symbol, DateTime now) {
+		DateTime lastSale = lastSaleLookup.get(symbol);
+		if (lastSale == null) {
+			return true;
 		}
-		Set<String> holdings = position.keySet();
-		for (String symbol : holdings) {
-			Optional<Double> closePriceOptional = cache.getPrice(nowDateTime, symbol);
-			if (closePriceOptional.isPresent()) {
-				Asset asset = position.remove(symbol);
-				cash += asset.numShares * closePriceOptional.get();
-			}
+		int delta = 
+				Days.daysBetween(
+						now.withTimeAtStartOfDay(), lastSale.withTimeAtStartOfDay()).getDays();
+		if (delta > MIN_STOCK_HOLDING_PERIOD ) {
+			return true;
 		}
+		return false;
 	}
-
-	public void sellShares(DateTime time, String symbol, int numShares, double sellPrice) {
+	
+	public void sellShares(DateTime time, String symbol, int numShares, double sellPrice,
+			boolean stopLoss) {
 		Asset asset = position.get(symbol);
 		if (numShares > asset.numShares) {
 			throw new RuntimeException("Selling more shares than available.  Check logic.");
@@ -86,8 +92,14 @@ public class Portfolio {
 		}
 		double amount = numShares * sellPrice;
 		cash += amount;
-		Order order = Order.sellOrder(this, time, symbol, numShares, sellPrice, amount);
+		Order order = null;
+		if (stopLoss) {
+			order = Order.stopLossOrder(this, time, symbol, numShares, sellPrice, amount);
+		} else {
+			order = Order.sellOrder(this, time, symbol, numShares, sellPrice, amount);
+		}
 		orders.add(order);
+		lastSaleLookup.put(symbol, time);
 	}
 	
 	public void initWatch(List<String> symbols) {
@@ -105,10 +117,8 @@ public class Portfolio {
 		if (numShares == 0) {
 			return;
 		}
-		Optional<Double> buyPrice = cache.getPrice(nowDateTime, symbol);
-		if (buyPrice.isPresent()) {
-			buyShares(nowDateTime, symbol, numShares, buyPrice.get());
-		}
+		double buyPrice = cache.getPrice(nowDateTime, symbol);
+		buyShares(nowDateTime, symbol, numShares, buyPrice);
 	}
 
 	public void buyShares(DateTime time, String symbol, int numShares, double buyPrice) {
@@ -117,7 +127,7 @@ public class Portfolio {
 		}
 		Asset asset = position.get(symbol);
 		if (asset == null) {
-			Asset newPosition = new Asset(symbol, numShares);
+			Asset newPosition = new Asset(symbol, numShares, buyPrice);
 			position.put(symbol, newPosition);
 		} else {
 			asset.numShares += numShares;
@@ -133,10 +143,6 @@ public class Portfolio {
 
 	// compute current cummulative return
 	public Report computeReturn(Report report, DateTime nowDateTime, QuoteCache cache) {
-		if (position.isEmpty()) {
-			report.cummulativeReturn = 0.0;
-			return report;
-		}
 		Double portfolioValue = computePortfolioValue(nowDateTime, cache);
 		report.startValue = initialValue;
 		report.endValue = portfolioValue;
@@ -153,14 +159,10 @@ public class Portfolio {
 		Double portfolioValue = this.cash;
 		Set<String> holdings = position.keySet();
 		for (String symbol : holdings) {
-			Optional<Double> closePriceOptional = cache.getPrice(nowDateTime, symbol);
-			if (closePriceOptional.isPresent()) {
-				Asset asset = position.get(symbol);
-				portfolioValue = portfolioValue + (asset.numShares * closePriceOptional.get());
-			} else {
-				throw new RuntimeException("Quote unavailable for " + nowDateTime);
-			}
-		}
+		double closePrice = cache.getPrice(nowDateTime, symbol);
+			Asset asset = position.get(symbol);
+			portfolioValue = portfolioValue + (asset.numShares * closePrice);
+		} 
 		valueMap.put(key, portfolioValue);
 		return portfolioValue;
 	}

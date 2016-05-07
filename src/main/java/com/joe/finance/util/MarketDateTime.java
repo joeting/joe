@@ -45,6 +45,10 @@ public class MarketDateTime {
 		return new MarketDateTime(time.minusDays(n));
 	}
 	
+	public boolean isBefore(MarketDateTime m) {
+		return this.time().isBefore(m.time());
+	}
+	
 	@Override
 	public String toString() {
 		return time.toString();

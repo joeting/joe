@@ -1,25 +1,23 @@
 package com.joe.finance.indicator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
 import com.google.common.base.Optional;
 import com.joe.finance.data.Key;
 import com.joe.finance.data.QuoteCache;
-import com.joe.finance.data.QuoteDao;
 import com.joe.finance.portfolio.Portfolio;
+import com.joe.finance.util.MarketDateTime;
 
-public class QuantitiveStats {
+public class BollingerBand {
 	
 	// moving average days.  ie. 5 = 5 day moving average.
 	private int days;
+	private double upperSigma;
+	private double lowerSigma;
 	private List<String> symbols;
 	// key is symbol
 	private Map<String, LinkedList<Double>> lastXDaysPrice;
@@ -29,15 +27,17 @@ public class QuantitiveStats {
 	
 	private QuoteCache cache;
 
-	public QuantitiveStats(int days, Portfolio portfolio, QuoteCache cache,
-			DateTime startTime, DateTime endTime) {
-		this(days, new ArrayList<>(portfolio.getWatch()), cache, startTime, endTime);
-	}
-	
-	public QuantitiveStats(int days, List<String> symbols, QuoteCache cache,
-			DateTime startTime, DateTime endTime) {
+	public BollingerBand(int days, 
+			double upperSigma,
+			double lowerSigma,
+			Portfolio portfolio, 
+			QuoteCache cache,
+			MarketDateTime startTime, 
+			MarketDateTime endTime) {
 		this.days = days;
-		this.symbols = symbols;
+		this.upperSigma = upperSigma;
+		this.lowerSigma = lowerSigma;
+		this.symbols = new ArrayList<>(portfolio.getWatch());
 		this.cache = cache;
 		lastXDaysPrice = new HashMap<>();
 		movingAverage = new HashMap<>();
@@ -45,20 +45,13 @@ public class QuantitiveStats {
 		init(startTime, endTime);
 	}
 	
-	public Map<Key, Double> getMovingAverage() {
-		return movingAverage;
-	}
-
-	public Map<Key, Double> getStandardDeviation() {
-		return standardDeviation;
-	}
-
-	private void init(DateTime startTime, DateTime endTime) {
-		DateTime iterationTime = new DateTime(startTime);
+	private void init(MarketDateTime startTime, MarketDateTime endTime) {
+		MarketDateTime iterationTime = new MarketDateTime(startTime.time());
 		while (iterationTime.isBefore(endTime)) {
 			for (String symbol : symbols) {
-				Optional<Double> priceOptional = cache.getPrice(iterationTime, symbol);
-				if (!priceOptional.isPresent()) {
+				Double price = cache.getPrice(iterationTime.time(), symbol);
+				if (price == null) {
+					// Must be market holiday.  Need to verify.
 					continue;
 				}
 			  LinkedList<Double> queue = 
@@ -70,8 +63,8 @@ public class QuantitiveStats {
 				if (queue.size() == days) {
 					queue.removeLast();
 				} 
-				queue.push(priceOptional.get());
-				Key key = new Key(symbol, iterationTime);
+				queue.push(price);
+				Key key = new Key(symbol, iterationTime.time());
 				Double sum = new Double(0);
 				for (Double p : queue) {
 					sum += p;
@@ -110,7 +103,7 @@ public class QuantitiveStats {
 		if (avg == null || sd == null) {
 			return Optional.absent();
 		}
-		return Optional.of(avg - 2 * sd);
+		return Optional.of(avg - lowerSigma * sd);
 	}
 	
 	public Optional<Double> getUpperBollinger(Key key) {
@@ -119,14 +112,7 @@ public class QuantitiveStats {
 		if (avg == null || sd == null) {
 			return Optional.absent();
 		}
-		return Optional.of(avg + 2 * sd);
+		return Optional.of(avg + upperSigma * sd);
 	}
 	
-	public static void main(String arg[]) {
-		DateTime startTime = new DateTime(2015, 1, 1, 4, 0, DateTimeZone.UTC);
-		DateTime endTime = new DateTime(2016, 4, 12, 4, 0, DateTimeZone.UTC);
-		QuoteDao dao = QuoteDao.quoteDao();
-		QuantitiveStats mv = new QuantitiveStats(98, Arrays.asList("SPY"), dao.getCache(), startTime, endTime);
-	}
-
 }

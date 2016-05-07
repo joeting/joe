@@ -36,10 +36,10 @@ public class QuoteCache {
 		return getPrice(quote);
 	}
 
-	public Optional<Double> getPrice(DateTime nowDateTime, String symbol) {
+	public Double getPrice(DateTime nowDateTime, String symbol) {
 		Quote quote = null;
 		quote = cache.get(new Key(symbol, nowDateTime));
-		return getPrice(quote);
+		return getPrice(quote).orNull();
 	}
 	
 	private Optional<Double> getPrice(Quote quote) {

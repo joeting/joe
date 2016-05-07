@@ -49,4 +49,9 @@ public class BuyHold implements IStrategy {
 		return null;
 	}
 	
+	@Override
+	public IStrategy setDebug() {
+		return this;
+	}
+	
 }

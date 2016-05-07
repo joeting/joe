@@ -18,6 +18,7 @@ public class Order {
 	
 	public static String SELL = "Sell";
 	public static String BUY = "Buy";
+	public static String SELL_STOP_LOSS = "Sell -- Stop Loss";
 	
 	public DateTime time;
 	public Portfolio portfolio;
@@ -38,6 +39,20 @@ public class Order {
 		order.price = sellPrice;
 		order.transactionAmount = amount;
 		order.type = BUY;
+		order.status = CLOSED_ORDER;
+		return order;
+	}
+	
+	public static Order stopLossOrder(Portfolio portfolio, DateTime time, String symbol, int numShares, 
+			double sellPrice, double amount) {
+		Order order = new Order();
+		order.portfolio = portfolio;
+		order.time = time;
+		order.symbol = symbol;
+		order.shares = numShares;
+		order.price = sellPrice;
+		order.transactionAmount = amount;
+		order.type = SELL_STOP_LOSS;
 		order.status = CLOSED_ORDER;
 		return order;
 	}

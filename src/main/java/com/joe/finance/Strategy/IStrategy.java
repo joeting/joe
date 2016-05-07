@@ -13,4 +13,5 @@ public interface IStrategy {
 	public List<Order> getTrades();
 	public Set<Dimension> getDimensions();
 	public IStrategy setDimValue(Dimension dim, double value);
+	public IStrategy setDebug();
 }
