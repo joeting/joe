@@ -37,6 +37,7 @@ public class ParticleSwarm {
 		this.startTime = MarketDateTime.nowMinusNDays(config.startNowMinusNDays);
 		this.endTime = endTime;
 		particles = new ArrayList<>();
+		StrategyFactory.init(config);
 		for (int i = 0; i < NUM_PARTICLES; i++) { 
 			Particle p = new Particle(StrategyFactory.getStrategyDimension(config)).init();
 			particles.add(p);

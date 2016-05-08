@@ -16,29 +16,27 @@ public class MeanReversion extends Strategy implements IStrategy {
 	public static final double UPPER_SIGMA = 1;
 	public static final double LOWER_SIGMA = 1;
 	
-	
 	public static Dimension ndays;
 	public static Dimension upperSigma;
 	public static Dimension lowerSigma;
 	
-	static {
+	private BollingerBand stats;
+	
+	public MeanReversion(Portfolio portfolio, MarketDateTime startTime, MarketDateTime endTime) {
+		super(portfolio, startTime, endTime);
+		report.strategyName = "MeanReversion";
+		dimValueMap.put(ndays, (double) 100);
+		dimValueMap.put(upperSigma, UPPER_SIGMA);
+		dimValueMap.put(lowerSigma, LOWER_SIGMA);
+	}
+	
+	public static void init() {
 		ndays = new Dimension("ndays", Range.closed(30.0, 120.0), 0);
 		upperSigma = new Dimension("upperSigma", Range.closed(1.5, 2.5), 1);
 		lowerSigma = new Dimension("lowerSigma", Range.closed(1.5, 2.5), 1);
 		dims.add(ndays);
 		dims.add(upperSigma);
 		dims.add(lowerSigma);
-	}
-	
-	private BollingerBand stats;
-	
-	public MeanReversion(Portfolio portfolio, MarketDateTime startTime, MarketDateTime endTime) {
-		
-		super(portfolio, startTime, endTime);
-		report.strategyName = "MeanReversion";
-		dimValueMap.put(ndays, (double) 100);
-		dimValueMap.put(upperSigma, UPPER_SIGMA);
-		dimValueMap.put(lowerSigma, LOWER_SIGMA);
 	}
 
 	@Override

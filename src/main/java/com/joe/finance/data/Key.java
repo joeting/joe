@@ -40,4 +40,9 @@ public class Key {
 		return result;
 	}
 	
+	@Override
+	public String toString() {
+		return key;
+	}
+	
 }

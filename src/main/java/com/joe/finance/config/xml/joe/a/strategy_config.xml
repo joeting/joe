@@ -1,36 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <config>
-    <name>MeanReversion</name>
+    <name>Momentum</name>
     <startNowMinusNDays>720</startNowMinusNDays>
-    <dimValues>
-        <dimValue>
-            <name>lowerSigma</name>
-            <value>1.6</value>
-        </dimValue>
+   <dimValues>
         <dimValue>
             <name>maxBuyRatio</name>
             <value>0.3</value>
-        </dimValue>
-        <dimValue>
-            <name>upperSigma</name>
-            <value>2.1</value>
         </dimValue>
         <dimValue>
             <name>stopLoss</name>
             <value>0.2</value>
         </dimValue>
         <dimValue>
-            <name>ndays</name>
-            <value>111.0</value>
-        </dimValue>
-        <dimValue>
             <name>maxSellRatio</name>
-            <value>0.35</value>
+            <value>0.2</value>
         </dimValue>
         <dimValue>
             <name>minBuyRatio</name>
             <value>0.1</value>
         </dimValue>
     </dimValues>
-    <fitnessValue>0.6068940091099998</fitnessValue>
 </config>

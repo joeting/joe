@@ -21,7 +21,7 @@ import com.joe.finance.order.Order;
 
 public class Portfolio {
 
-	public static final double MIN_STOCK_HOLDING_PERIOD = 30;
+	public static final double MIN_STOCK_HOLDING_PERIOD = 0;
 	static final Logger logger = Logger.getLogger(Portfolio.class);
 	
 	private String name;
@@ -73,11 +73,11 @@ public class Portfolio {
 		}
 		int delta = 
 				Days.daysBetween(
-						now.withTimeAtStartOfDay(), lastSale.withTimeAtStartOfDay()).getDays();
-		if (delta > MIN_STOCK_HOLDING_PERIOD ) {
-			return true;
+						lastSale.withTimeAtStartOfDay(), now.withTimeAtStartOfDay()).getDays();
+		if (delta <= MIN_STOCK_HOLDING_PERIOD ) {
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	public void sellShares(DateTime time, String symbol, int numShares, double sellPrice,
