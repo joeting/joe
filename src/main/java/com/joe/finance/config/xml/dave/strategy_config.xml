@@ -1,10 +1,10 @@
 <config>
-	<name>MeanReversion</name>
+    <name>MeanReversion</name>
     <startNowMinusNDays>720</startNowMinusNDays>
     <dimValues>
         <dimValue>
             <name>lowerSigma</name>
-            <value>0.9</value>
+            <value>2.0</value>
         </dimValue>
         <dimValue>
             <name>maxBuyRatio</name>
@@ -12,15 +12,19 @@
         </dimValue>
         <dimValue>
             <name>upperSigma</name>
-            <value>1.2</value>
+            <value>1.5</value>
+        </dimValue>
+        <dimValue>
+            <name>stopLoss</name>
+            <value>0.2</value>
         </dimValue>
         <dimValue>
             <name>ndays</name>
-            <value>46.0</value>
+            <value>42.0</value>
         </dimValue>
         <dimValue>
             <name>maxSellRatio</name>
-            <value>0.61</value>
+            <value>0.34</value>
         </dimValue>
         <dimValue>
             <name>minBuyRatio</name>

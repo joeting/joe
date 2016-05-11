@@ -21,7 +21,7 @@ import com.joe.finance.order.Order;
 
 public class Portfolio {
 
-	public static final double MIN_STOCK_HOLDING_PERIOD = 0;
+	public static final double MIN_STOCK_HOLDING_PERIOD = 30;
 	static final Logger logger = Logger.getLogger(Portfolio.class);
 	
 	private String name;
@@ -38,15 +38,15 @@ public class Portfolio {
 	private Map<String, DateTime> lastSaleLookup;
 
 	public class Asset {
-		public Asset(String symbol, int numShares, double buyPrice) {
+		public Asset(String symbol, int numShares, double startPrice) {
 			this.symbol = symbol;
 			this.numShares = numShares;
-			this.buyPrice = buyPrice;
+			this.startPrice = startPrice;
 		}
 
 		public String symbol;
 		public int numShares;
-		public double buyPrice;
+		public double startPrice;
 	}
 
 	public Portfolio(PortfolioConfig config) {
@@ -90,6 +90,7 @@ public class Portfolio {
 		if (asset.numShares == 0) {
 			position.remove(symbol);
 		}
+		double purchaseAmount = numShares * asset.startPrice;
 		double amount = numShares * sellPrice;
 		cash += amount;
 		Order order = null;
@@ -99,7 +100,9 @@ public class Portfolio {
 			order = Order.sellOrder(this, time, symbol, numShares, sellPrice, amount);
 		}
 		orders.add(order);
-		lastSaleLookup.put(symbol, time);
+		if (amount < purchaseAmount) {
+			lastSaleLookup.put(symbol, time);
+		}
 	}
 	
 	public void initWatch(List<String> symbols) {
@@ -159,7 +162,11 @@ public class Portfolio {
 		Double portfolioValue = this.cash;
 		Set<String> holdings = position.keySet();
 		for (String symbol : holdings) {
-		double closePrice = cache.getPrice(nowDateTime, symbol);
+			Double closePrice = cache.getPrice(nowDateTime, symbol);
+			if (closePrice == null) {
+				throw new IllegalArgumentException(nowDateTime 
+						+ ": no quote for " + symbol);
+			}
 			Asset asset = position.get(symbol);
 			portfolioValue = portfolioValue + (asset.numShares * closePrice);
 		} 

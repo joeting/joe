@@ -8,8 +8,8 @@ import java.util.Set;
 
 public class Particle {
 	
-	public static double C1 = 2;
-	public static double C2 = 2.5;
+	public static double C1 = 1;
+	public static double C2 = 1;
 	
 	private Set<Dimension> dimensions;
 	private Map<Dimension, Double> bestPosition;

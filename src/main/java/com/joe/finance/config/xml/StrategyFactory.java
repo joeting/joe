@@ -12,10 +12,15 @@ import com.joe.finance.util.MarketDateTime;
 
 public class StrategyFactory {
 	
-	public static void init(StrategyConfig config) {
+	public static Set<Dimension> init(StrategyConfig config) {
 		if ("MeanReversion".equalsIgnoreCase(config.name)) {
 			MeanReversion.init();
+			return MeanReversion.dims;
+		} else if ("Momentum".equalsIgnoreCase(config.name)) {
+			Momentum.init();
+			return Momentum.dims;
 		}
+		return new HashSet<>();
 	}
 	
 	public static IStrategy buildStrategy(StrategyConfig config,
@@ -30,13 +35,4 @@ public class StrategyFactory {
 		throw new IllegalArgumentException("Invalid strategy configuration.");
 	}
 	
-	public static Set<Dimension> getStrategyDimension(StrategyConfig config) {
-		if ("MeanReversion".equalsIgnoreCase(config.name)) {
-			MeanReversion.init();
-			return MeanReversion.dims;
-		} else {
-			return new HashSet<>();
-		}
-	}
-
 }

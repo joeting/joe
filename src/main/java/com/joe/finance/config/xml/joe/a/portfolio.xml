@@ -8,6 +8,8 @@
         <symbol>AMZN</symbol>
         <symbol>NFLX</symbol>
         <symbol>TSLA</symbol>
+        <symbol>AAPL</symbol>
+        <symbol>MSFT</symbol>
     </symbols>
     <portfolioStartValue>1000000.0</portfolioStartValue>
 </portfolio>

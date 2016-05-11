@@ -43,9 +43,7 @@ public class MeanReversion extends Strategy implements IStrategy {
 	public void run(MarketDateTime iterationTime, boolean isBackTest) {
 		if (stats == null) {
 			int days = (int) dimValueMap.get(ndays).doubleValue();
-			this.stats = new BollingerBand(days, 
-					dimValueMap.get(upperSigma),
-					dimValueMap.get(lowerSigma),
+			this.stats = BollingerBand.Factory.getInstance(days, 
 					portfolio, 
 					cache, 
 					startTime.minusDays(days), 
@@ -59,8 +57,10 @@ public class MeanReversion extends Strategy implements IStrategy {
 	
 	private void run(DateTime time, String symbol, Key key, boolean isBackTest) {
 		Optional<Double> priceOptional = cache.getPrice(key);
-		Optional<Double> upperBollingerOptional = stats.getUpperBollinger(key);
-		Optional<Double> lowerBollingerOptional = stats.getLowerBollinger(key);
+		Optional<Double> upperBollingerOptional = stats.getUpperBollinger(key, 
+				dimValueMap.get(upperSigma));
+		Optional<Double> lowerBollingerOptional = stats.getLowerBollinger(key,
+				dimValueMap.get(lowerSigma));
 		Optional<Double> movingAvgOptional = stats.getMovingAverage(key);
 		if (!priceOptional.isPresent()
 				|| !upperBollingerOptional.isPresent()

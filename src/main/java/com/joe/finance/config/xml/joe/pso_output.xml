@@ -5,15 +5,15 @@
     <dimValues>
         <dimValue>
             <name>lowerSigma</name>
-            <value>1.6</value>
+            <value>1.5</value>
         </dimValue>
         <dimValue>
             <name>maxBuyRatio</name>
-            <value>0.3</value>
+            <value>1.0</value>
         </dimValue>
         <dimValue>
             <name>upperSigma</name>
-            <value>2.1</value>
+            <value>2.3</value>
         </dimValue>
         <dimValue>
             <name>stopLoss</name>
@@ -21,16 +21,16 @@
         </dimValue>
         <dimValue>
             <name>ndays</name>
-            <value>111.0</value>
+            <value>47.0</value>
         </dimValue>
         <dimValue>
             <name>maxSellRatio</name>
-            <value>0.35</value>
+            <value>0.2</value>
         </dimValue>
         <dimValue>
             <name>minBuyRatio</name>
             <value>0.1</value>
         </dimValue>
     </dimValues>
-    <fitnessValue>0.6068940091099998</fitnessValue>
+    <fitnessValue>0.9825657327270005</fitnessValue>
 </config>

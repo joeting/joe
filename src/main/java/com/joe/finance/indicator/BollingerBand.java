@@ -14,10 +14,32 @@ import com.joe.finance.util.MarketDateTime;
 
 public class BollingerBand {
 	
+	public static class Factory {
+		
+		private static Map<Integer, BollingerBand> instanceCache = new HashMap<>();
+		
+		public static BollingerBand getInstance(int days,
+				Portfolio portfolio,
+				QuoteCache cache,
+				MarketDateTime startTime,
+				MarketDateTime endTime) {
+			if (instanceCache.containsKey(days)) {
+				System.out.println("Cachehit  :"  + days);
+				return instanceCache.get(days);
+			} else {
+				BollingerBand band = new BollingerBand(days,
+						portfolio,
+						cache,
+						startTime,
+						endTime);
+				instanceCache.put(days, band);
+				return band;
+			}
+		}
+	}
+	
 	// moving average days.  ie. 5 = 5 day moving average.
 	private int days;
-	private double upperSigma;
-	private double lowerSigma;
 	private List<String> symbols;
 	// key is symbol
 	private Map<String, LinkedList<Double>> lastXDaysPrice;
@@ -28,15 +50,11 @@ public class BollingerBand {
 	private QuoteCache cache;
 
 	public BollingerBand(int days, 
-			double upperSigma,
-			double lowerSigma,
 			Portfolio portfolio, 
 			QuoteCache cache,
 			MarketDateTime startTime, 
 			MarketDateTime endTime) {
 		this.days = days;
-		this.upperSigma = upperSigma;
-		this.lowerSigma = lowerSigma;
 		this.symbols = new ArrayList<>(portfolio.getWatch());
 		this.cache = cache;
 		lastXDaysPrice = new HashMap<>();
@@ -97,7 +115,7 @@ public class BollingerBand {
 		return Optional.of(movingAverage.get(key));
 	}
 	
-	public Optional<Double> getLowerBollinger(Key key) {
+	public Optional<Double> getLowerBollinger(Key key, double lowerSigma) {
 		Double avg = movingAverage.get(key);
 		Double sd = standardDeviation.get(key);
 		if (avg == null || sd == null) {
@@ -106,7 +124,7 @@ public class BollingerBand {
 		return Optional.of(avg - lowerSigma * sd);
 	}
 	
-	public Optional<Double> getUpperBollinger(Key key) {
+	public Optional<Double> getUpperBollinger(Key key, double upperSigma) {
 		Double avg = movingAverage.get(key);
 		Double sd = standardDeviation.get(key);
 		if (avg == null || sd == null) {

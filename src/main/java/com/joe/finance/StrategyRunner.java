@@ -1,5 +1,7 @@
 package com.joe.finance;
 
+import java.util.Set;
+
 import com.joe.finance.Strategy.IStrategy;
 import com.joe.finance.config.xml.PortfolioConfig;
 import com.joe.finance.config.xml.StrategyConfig;
@@ -14,15 +16,17 @@ public class StrategyRunner {
 	
 	private MarketDateTime startTime;
 	private IStrategy strategy;
+	private Set<Dimension> dims;
 	
 	public StrategyRunner() {
 		StrategyConfig config = XmlConfigUtil.importConfigFile();
+		dims = StrategyFactory.init(config);
 		PortfolioConfig portfolioConfig = XmlConfigUtil.importPortfolioFile().get();
 		Portfolio portfolio = new Portfolio(portfolioConfig);
 		MarketDateTime startTime = MarketDateTime.nowMinusNDays(config.startNowMinusNDays);
 		IStrategy strategy = StrategyFactory.buildStrategy(config, portfolio, MarketDateTime.now());
 		// strategy.setDebug();
-		for (Dimension dim : StrategyFactory.getStrategyDimension(config)) {
+		for (Dimension dim : dims) {
 			strategy.setDimValue(dim, config.getDimValue(dim.getName()));
 		}
 		this.startTime = startTime;

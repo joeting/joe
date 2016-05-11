@@ -34,7 +34,7 @@ public abstract class Strategy implements IStrategy {
 	
 	static {
 		minBuyRatio = new Dimension("minBuyRatio", Range.closed(0.1, 0.1), 2);
-		maxBuyRatio = new Dimension("maxBuyRatio", Range.closed(0.1, 0.3), 2);
+		maxBuyRatio = new Dimension("maxBuyRatio", Range.closed(0.3, 0.3), 2);
 		maxSellRatio = new Dimension("maxSellRatio", Range.closed(0.2, 1.0), 2);
 		stopLoss = new Dimension("stopLoss", Range.closed(0.2, 0.2), 2);
 		dims = new HashSet<>();
@@ -78,11 +78,6 @@ public abstract class Strategy implements IStrategy {
 	}
 	
 	@Override
-	public Set<Dimension> getDimensions() {
-		return dims;
-	}
-	
-	@Override
 	public IStrategy setDebug() {
 		debug = true;
 		return this;
@@ -90,9 +85,9 @@ public abstract class Strategy implements IStrategy {
 	
 	protected boolean triggerStopLoss(DateTime time, Asset asset, double price) {
 		if (asset != null) {
-			double delta =  price - asset.buyPrice;
+			double delta =  price - asset.startPrice;
 			if (delta < 0
-					&& ((Math.abs(delta) /  asset.buyPrice) > dimValueMap.get(stopLoss))){
+					&& ((Math.abs(delta) /  asset.startPrice) > dimValueMap.get(stopLoss))){
 				portfolio.sellShares(time, asset.symbol, asset.numShares, price, true);
 				return true;
 			}

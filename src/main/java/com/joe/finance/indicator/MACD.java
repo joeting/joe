@@ -11,12 +11,48 @@ import com.joe.finance.util.MarketDateTime;
 
 public class MACD {
 	
+	private int fast;
+	private int slow;
+	private int sig;
+	
 	private Portfolio portfolio;
 	private QuoteCache cache;
 	private Map<Key, Signal> keySigMap;
 	private boolean debug = false;
 	
-	public MACD(Portfolio portfolio, MarketDateTime startTime, MarketDateTime endTime) {
+	public static class Factory {
+		
+		private static Map<String, MACD> instanceCache = new HashMap<>();
+		
+		public static MACD getInstance(int fast,
+				int slow,
+				int sig,
+				Portfolio portfolio,
+				MarketDateTime startTime,
+				MarketDateTime endTime) {
+			String key = fast + "_" + slow + "_" + sig;
+			if (instanceCache.containsKey(key)) {
+				System.out.println("Cachehit  :"  + key);
+				return instanceCache.get(key);
+			} else {
+				MACD macd = new MACD(fast,
+						slow,
+						sig,
+						portfolio,
+						startTime,
+						endTime);
+				instanceCache.put(key, macd);
+				return macd;
+			}
+		}
+		
+	}
+	
+	public MACD(int fast, int slow, int sig, Portfolio portfolio, MarketDateTime startTime, 
+			MarketDateTime endTime) {
+		this.fast = fast;
+		this.slow = slow;
+		this.sig= sig;
 		this.portfolio = portfolio;
 		this.cache = QuoteDao.quoteDao().getCache();
 		keySigMap = new HashMap<>();
@@ -30,9 +66,9 @@ public class MACD {
 		Map<String, Double> emaSlowDays = new HashMap<>();
 		Map<String, Double> sigDays = new HashMap<>();
 		Map<String, Double> divergenceMap = new HashMap<>();
-		double CP_MULTIPLIER12 = (2.0 / (12.0 + 1.0));
-		double CP_MULTIPLIER26 = (2.0 / (26.0 + 1.0));
-		double MACD_MULTIPLIER = (2.0 / (9.0 + 1.0));
+		double CP_MULTIPLIER_FAST = (2.0 / (fast + 1.0));
+		double CP_MULTIPLIER_SLOW = (2.0 / (slow + 1.0));
+		double MACD_MULTIPLIER = (2.0 / (sig + 1.0));
 		while (iterationTime.isBefore(endTime)) {
 			for (String symbol : portfolio.getWatch()) {
 				Double price = cache.getPrice(iterationTime.time(), symbol);
@@ -40,8 +76,8 @@ public class MACD {
 					// Must be market holiday.  Need to verify.
 					continue;
 				}
- 				double emaFast = computeEma(symbol, emaFastDays, CP_MULTIPLIER12, price);
-				double emaSlow = computeEma(symbol, emaSlowDays, CP_MULTIPLIER26, price);
+ 				double emaFast = computeEma(symbol, emaFastDays, CP_MULTIPLIER_FAST, price);
+				double emaSlow = computeEma(symbol, emaSlowDays, CP_MULTIPLIER_SLOW, price);
 				double macd = emaFast - emaSlow;
 				double sig = computeEma(symbol, sigDays, MACD_MULTIPLIER, macd);
 				double divergence = macd - sig;
@@ -98,7 +134,8 @@ public class MACD {
 	public static void main(String[] args) {
 		Portfolio portfolio = new Portfolio("Test",  1000000);
 		portfolio.initWatch("NFLX");
-		MACD d = new MACD(portfolio, MarketDateTime.now().minusDays(200), MarketDateTime.now());
+		MACD d = new MACD(12, 26, 9, portfolio, MarketDateTime.now().minusDays(200), 
+				MarketDateTime.now());
 		System.out.println(d);
 	}
 

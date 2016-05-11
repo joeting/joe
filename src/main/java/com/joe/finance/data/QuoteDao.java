@@ -53,11 +53,11 @@ public class QuoteDao {
 		}
 		if (quoteCache == null) {
 			quoteCache = new QuoteCache(new HashMap<Key, Quote>());
-		}
-		Query<Quote> query = datastore.createQuery(Quote.class);
-		for (Quote quote : query.asList()) {
-			symbols.add(quote.getSymbol());
-			quoteCache.put(quote.getId(), quote);
+			Query<Quote> query = datastore.createQuery(Quote.class);
+			for (Quote quote : query.asList()) {
+				symbols.add(quote.getSymbol());
+				quoteCache.put(quote.getId(), quote);
+			}
 		}
 		try {
 			if (!currentLoaded) {

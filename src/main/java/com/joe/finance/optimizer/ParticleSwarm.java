@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Optional;
 import com.joe.finance.BackTest;
@@ -19,27 +20,28 @@ import com.joe.finance.util.MarketDateTime;
 
 public class ParticleSwarm {
 	
-	private static final int NUM_PARTICLES = 50;
-	private static final int MAX_SWARM_ITERATIONS = 10;
+	private static final int NUM_PARTICLES = 70;
+	private static final int MAX_SWARM_ITERATIONS = 20;
 	
 	private StrategyConfig config;
 	private List<Particle> particles;
 	private MarketDateTime startTime;
 	private MarketDateTime endTime;
 	private List<Order> winningTrades;
+	private Set<Dimension> dims;
 	
 	private Map<Dimension, Double> globalMaxPosition;
 	private double globalMaxFitness = -1;
 	
 	public ParticleSwarm(MarketDateTime endTime) {
 		this.config = XmlConfigUtil.importConfigFile();
+		this.dims = StrategyFactory.init(config);
 		importPreviousRun();
 		this.startTime = MarketDateTime.nowMinusNDays(config.startNowMinusNDays);
 		this.endTime = endTime;
 		particles = new ArrayList<>();
-		StrategyFactory.init(config);
 		for (int i = 0; i < NUM_PARTICLES; i++) { 
-			Particle p = new Particle(StrategyFactory.getStrategyDimension(config)).init();
+			Particle p = new Particle(dims).init();
 			particles.add(p);
 		}
 	}
@@ -56,7 +58,7 @@ public class ParticleSwarm {
 			for (Particle particle : particles) {
 				Portfolio folio = new Portfolio(portfolioConfig);
 				IStrategy strategy = StrategyFactory.buildStrategy(config, folio, endTime);
-				for (Dimension dim : strategy.getDimensions()) {
+				for (Dimension dim : dims) {
 					strategy.setDimValue(dim, particle.getCurrentPosition().get(dim));
 				}
 				strategies.add(strategy);
@@ -75,7 +77,7 @@ public class ParticleSwarm {
 					globalMaxPosition = particle.cloneCurrentPosition();
 					winningTrades = strategy.getTrades();
 				}
-				for (Dimension dim : strategy.getDimensions()) {
+				for (Dimension dim : dims) {
 					double globalMaxPositionDim = globalMaxPosition.containsKey(dim) 
 							? globalMaxPosition.get(dim) : -1;
 					particle.update(dim, fitnessValue, globalMaxPositionDim);
@@ -93,7 +95,7 @@ public class ParticleSwarm {
 		eConfig.dimValues = new ArrayList<>();
 		eConfig.name = config.name;
 		eConfig.startNowMinusNDays = config.startNowMinusNDays;
-		for (Dimension dim : StrategyFactory.getStrategyDimension(config)) {
+		for (Dimension dim : dims) {
 			DimValueConfig dimConfig = new DimValueConfig();
 			dimConfig.name = dim.getName();
 			dimConfig.value = globalMaxPosition.get(dim);
@@ -110,14 +112,14 @@ public class ParticleSwarm {
 			return;
 		}
 		StrategyConfig config = oConfig.get();
-		for (Dimension d : StrategyFactory.getStrategyDimension(config)) {
+		for (Dimension d : dims) {
 			globalMaxPosition.put(d, config.getDimValue(d.getName()));
 		}
 		this.globalMaxFitness = config.fitnessValue;
 	}
 	
 	private void printResults() {
-		for (Dimension d : StrategyFactory.getStrategyDimension(config)) {
+		for (Dimension d : dims) {
 			String output = String.format("Best %s value : %f", d.getName(), 
 					globalMaxPosition.get(d));
 			System.out.println(output);

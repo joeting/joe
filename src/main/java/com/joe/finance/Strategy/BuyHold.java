@@ -1,7 +1,6 @@
 package com.joe.finance.Strategy;
 
 import java.util.List;
-import java.util.Set;
 
 import com.joe.finance.data.QuoteCache;
 import com.joe.finance.optimizer.Dimension;
@@ -39,11 +38,6 @@ public class BuyHold implements IStrategy {
 		return null;
 	}
 	
-	@Override
-	public Set<Dimension> getDimensions() {
-		return null;
-	}
-
 	@Override
 	public IStrategy setDimValue(Dimension dim, double value) {
 		return null;
