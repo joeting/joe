@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <portfolio>
     <name>Joe's Portfolio</name>
+    <lastImportDate>2016-05-16</lastImportDate>
     <symbols>
         <symbol>GOOG</symbol>
         <symbol>FB</symbol>

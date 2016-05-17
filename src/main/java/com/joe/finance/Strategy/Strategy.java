@@ -34,9 +34,9 @@ public abstract class Strategy implements IStrategy {
 	
 	static {
 		minBuyRatio = new Dimension("minBuyRatio", Range.closed(0.1, 0.1), 2);
-		maxBuyRatio = new Dimension("maxBuyRatio", Range.closed(0.3, 0.3), 2);
+		maxBuyRatio = new Dimension("maxBuyRatio", Range.closed(0.1, 0.3), 2);
 		maxSellRatio = new Dimension("maxSellRatio", Range.closed(0.2, 1.0), 2);
-		stopLoss = new Dimension("stopLoss", Range.closed(0.2, 0.2), 2);
+		stopLoss = new Dimension("stopLoss", Range.closed(0.2, 0.3), 2);
 		dims = new HashSet<>();
 		dims.add(minBuyRatio);
 		dims.add(maxBuyRatio);

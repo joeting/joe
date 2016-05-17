@@ -18,6 +18,7 @@ public class Report {
 	}
 	
 	public void printReport() {
+		System.out.println("Strategy name : " + strategyName);
 		System.out.println(
 				String.format("Portfolio start value : $%.2f", startValue));
 		System.out.println(
